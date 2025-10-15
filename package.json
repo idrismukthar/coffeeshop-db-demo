@@ -1,4 +1,12 @@
 {
+  "name": "db-practical",
+  "version": "1.0.0",
+  "description": "CoffeeShop DB Demo - Node.js + SQLite example",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "npm rebuild sqlite3 --build-from-source"
+  },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
@@ -10,15 +18,7 @@
     "path": "^0.12.7",
     "sqlite3": "^5.1.7"
   },
-  "name": "db-practical",
-  "version": "1.0.0",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
+  "keywords": ["nodejs", "sqlite3", "express", "demo"],
   "author": "",
-  "license": "ISC",
-  "description": ""
+  "license": "ISC"
 }
