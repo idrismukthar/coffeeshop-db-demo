@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TLMPS Admin Panel</title>
+<style>
+  :root {
+    --purple:#5b2e91;
+    --lilac:#d9b3ff;
+    --lime:#b6e35a;
+    --bg:#f3f0fa;
+  }
+
+  body {
+    font-family:"Poppins",Arial,sans-serif;
+    background:var(--bg);
+    margin:0;
+    color:#222;
+  }
+
+  header {
+    background:var(--purple);
+    color:#fff;
+    text-align:center;
+    padding:1rem;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+
+  h1 {
+    margin:0;
+    font-size:1.7rem;
+  }
+
+  main {
+    padding:1rem;
+    max-width:900px;
+    margin:auto;
+  }
+
+  .auth-box {
+    text-align:center;
+    background:white;
+    max-width:360px;
+    margin:3rem auto;
+    padding:2rem;
+    border-radius:14px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+    animation:fadeIn 1s ease;
+  }
+
+  input[type="password"] {
+    padding:.6rem;
+    border:1px solid #ccc;
+    border-radius:6px;
+    width:80%;
+    margin-bottom:1rem;
+  }
+
+  button {
+    background:linear-gradient(135deg,var(--purple),var(--lilac));
+    color:#fff;
+    border:none;
+    padding:.6rem 1rem;
+    border-radius:8px;
+    cursor:pointer;
+    transition:transform .2s;
+  }
+
+  button:hover { transform:scale(1.03); }
+
+  .student {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:white;
+    border-radius:12px;
+    padding:1rem;
+    margin-bottom:1rem;
+    box-shadow:0 3px 6px rgba(0,0,0,0.08);
+    animation:fadeInUp .6s ease;
+  }
+
+  img {
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-right:1rem;
+    border:2px solid var(--lilac);
+  }
+
+  .info {
+    flex:1;
+    font-size:.9rem;
+  }
+
+  .delete-btn {
+    background:linear-gradient(135deg,#f44336,#e57373);
+    border:none;
+    padding:.4rem .8rem;
+    border-radius:6px;
+    color:#fff;
+    cursor:pointer;
+    transition:background .2s;
+  }
+
+  .delete-btn:hover { background:#c62828; }
+
+  @keyframes fadeIn {from{opacity:0}to{opacity:1}}
+  @keyframes fadeInUp {from{opacity:0;transform:translateY(25px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 TLMPS Admin Panel</h1>
+</header>
+
+<main>
+  <div id="auth" class="auth-box">
+    <p><b>Admin Access</b></p>
+    <input id="pw" type="password" placeholder="Enter admin password" />
+    <br />
+    <button onclick="checkPassword()">Enter</button>
+    <p id="msg" style="color:#888;font-size:.85rem;margin-top:.5rem"></p>
+  </div>
+
+  <div id="content" style="display:none">
+    <div id="list"></div>
+  </div>
+</main>
+
+<script>
+  const API_URL = "";
+  const ADMIN_PASSWORD = "qwerty"; 
+  const ADMIN_TOKEN = "changeme";  
+
+  async function checkPassword() {
+    const pw = document.getElementById("pw").value.trim();
+    const msg = document.getElementById("msg");
+
+    if (pw !== ADMIN_PASSWORD) {
+      msg.textContent = "Incorrect password.";
+      return;
+    }
+    msg.textContent = "";
+    document.getElementById("auth").style.display = "none";
+    document.getElementById("content").style.display = "block";
+    loadStudents();
+  }
+
+  async function loadStudents() {
+    const res = await fetch(`${API_URL}/api/students?token=${ADMIN_TOKEN}`);
+    if (!res.ok) {
+      document.getElementById("list").innerHTML = "<p>Failed to load records.</p>";
+      return;
+    }
+    const data = await res.json();
+    const list = document.getElementById("list");
+    list.innerHTML = "";
+
+    if (!data.length) {
+      list.innerHTML = "<p>No records found.</p>";
+      return;
+    }
+
+    data.forEach((s) => {
+      const div = document.createElement("div");
+      div.className = "student";
+      div.innerHTML = `
+        <img src="uploads/${s.imageFile || "default.png"}" alt="photo">
+        <div class="info">
+          <b>${s.firstName} ${s.lastName}</b><br>
+          <small>ID: ${s.studentID}</small><br>
+          <small>DOB: ${s.dob || "N/A"}</small><br>
+          <small>Religion: ${s.religion || "N/A"}</small>
+        </div>
+        <button class="delete-btn" onclick="deleteStudent(${s.id})">Delete</button>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  async function deleteStudent(id) {
+    if (!confirm("Delete this record?")) return;
+    const res = await fetch(`${API_URL}/api/students/${id}?token=${ADMIN_TOKEN}`, {method:"DELETE"});
+    if (res.ok) {
+      alert("Deleted successfully.");
+      loadStudents();
+    } else {
+      alert("Failed to delete record.");
+    }
+  }
+</script>
+</body>
+</html>

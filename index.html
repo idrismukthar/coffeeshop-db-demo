@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TLMPS Class Signup</title>
+<style>
+  /* === COLORS === */
+  :root {
+    --purple: #5b2e91;
+    --lilac: #d9b3ff;
+    --lime: #b6e35a;
+    --bg: #f3f0fa;
+  }
+
+  body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 30px;
+    overflow-x: hidden;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 25px;
+    animation: fadeInDown 1s ease;
+  }
+
+  header img {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  h2 {
+    color: var(--purple);
+    margin-top: 0;
+    font-size: 1.8rem;
+  }
+
+  .card {
+    background: white;
+    padding: 25px 30px;
+    border-radius: 16px;
+    max-width: 540px;
+    margin: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    animation: fadeInUp 1.2s ease;
+  }
+
+  label {
+    font-weight: 600;
+    color: var(--purple);
+    margin-top: 10px;
+  }
+
+  input, button {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 0.95rem;
+  }
+
+  input:focus {
+    border-color: var(--purple);
+    outline: none;
+    box-shadow: 0 0 6px var(--lilac);
+  }
+
+  button {
+    background: linear-gradient(135deg, var(--purple), var(--lilac));
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+  }
+
+  button:hover {
+    transform: scale(1.03);
+    background: linear-gradient(135deg, var(--lilac), var(--purple));
+  }
+
+  .note {
+    font-size: 13px;
+    color: #666;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .preview {
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  img.preview-img {
+    max-width: 120px;
+    border-radius: 10px;
+    border: 2px solid var(--lilac);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    animation: popIn 0.5s ease;
+  }
+
+  /* === Animations === */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="tlmps_llogo.png" alt="School Logo">
+  <h2>JSS3 Database Practical Signup</h2>
+  <p style="color:#666;font-size:14px;">Enter your details below to join our demo database</p>
+</header>
+
+<div class="card">
+  <form id="signupForm" enctype="multipart/form-data">
+    <label>Student ID</label>
+    <input name="studentID" required>
+
+    <label>Surname</label>
+    <input name="surname" required>
+
+    <label>First name</label>
+    <input name="firstName" required>
+
+    <label>Last name</label>
+    <input name="lastName" required>
+
+    <label>Date of birth</label>
+    <input type="date" name="dob">
+
+    <label>Religion</label>
+    <input name="religion">
+
+    <label>Upload Photo (optional)</label>
+    <input type="file" name="image" id="imageInput" accept="image/*">
+
+    <div class="preview" id="preview"></div>
+
+    <button type="submit">Submit Form</button>
+    <div class="note">Your information will appear instantly on the admin page (demo only)</div>
+  </form>
+</div>
+
+<script>
+const form = document.getElementById('signupForm');
+const preview = document.getElementById('preview');
+const imgInput = document.getElementById('imageInput');
+
+imgInput.addEventListener('change', () => {
+  preview.innerHTML = '';
+  const f = imgInput.files[0];
+  if (!f) return;
+  const url = URL.createObjectURL(f);
+  const img = document.createElement('img');
+  img.src = url; 
+  img.className = 'preview-img';
+  preview.appendChild(img);
+});
+
+form.addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const data = new FormData(form);
+
+  const res = await fetch('/submit', { method: 'POST', body: data });
+  const json = await res.json();
+
+  if (json && json.success) {
+    alert('✅ Thank you! Submission saved.');
+    form.reset();
+    preview.innerHTML = '';
+  } else {
+    alert('❌ Failed to submit: ' + (json.error || 'unknown error'));
+  }
+});
+</script>
+
+</body>
+</html>
